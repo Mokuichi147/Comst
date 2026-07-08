@@ -41,10 +41,35 @@ build-backend = "uv_build"
 # Raspberry Pi (ARMv6/armv6l) ではPyPIにwheelが無いため、Pi向けビルド済みwheelを
 # 提供する piwheels を併用する。PyPIにwheelがある環境(mac等)ではそのままPyPIが優先される。
 index-strategy = "unsafe-best-match"
+# unsafe-best-match は各パッケージのソースを1つに絞るため、piwheels(armv6l/armv7l専用wheel
+# しか無い av 等)が選ばれると x86_64 や mac で「対応wheelが無い」と解決に失敗する。
+# 対象環境で必ずwheelが揃うよう、Pi以外の主要プラットフォームを明示して解決を安定させる。
+required-environments = [
+    "sys_platform == 'linux' and platform_machine == 'x86_64'",
+]
 # piwheelsのopencv(cp313)は numpy<2.3 を宣言するが、cp313向けnumpyは2.3以上しか
 # 存在しない。numpyはビルド時より新しいランタイムと後方互換なため、入手可能な版に上書きする。
 override-dependencies = ["numpy>=2.4.4,<2.5"]
 
 [[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+
+[[tool.uv.index]]
 name = "piwheels"
 url = "https://www.piwheels.org/simple/"
+
+# unsafe-best-match だと av / opencv のような「piwheelsにはarmv6l/armv7l wheelしか無い」
+# パッケージが非Pi環境でもpiwheels由来に固定され解決に失敗する。プラットフォームごとに
+# 取得元を明示し、Piはpiwheels・それ以外はPyPIのwheelを使うようにする。
+[tool.uv.sources]
+av = [
+    { index = "piwheels", marker = "platform_machine == 'armv6l'" },
+    { index = "pypi", marker = "platform_machine != 'armv6l'" },
+]
+opencv-python = [
+    { index = "pypi", marker = "platform_machine != 'armv6l'" },
+]
+opencv-python-headless = [
+    { index = "piwheels", marker = "platform_machine == 'armv6l'" },
+]

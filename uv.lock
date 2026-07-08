@@ -1,6 +1,16 @@
 version = 1
 revision = 3
 requires-python = ">=3.12.10"
+resolution-markers = [
+    "platform_machine == 'armv6l'",
+    "platform_machine != 'armv6l'",
+]
+required-markers = [
+    "platform_machine == 'x86_64' and sys_platform == 'linux'",
+]
+
+[manifest]
+overrides = [{ name = "numpy", specifier = ">=2.4.4,<2.5" }]
 
 [[package]]
 name = "aioice"
@@ -21,7 +31,8 @@ version = "1.14.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aioice" },
-    { name = "av" },
+    { name = "av", version = "16.0.1", source = { registry = "https://www.piwheels.org/simple/" }, marker = "platform_machine == 'armv6l'" },
+    { name = "av", version = "16.1.0", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine != 'armv6l'" },
     { name = "cryptography" },
     { name = "google-crc32c" },
     { name = "pyee" },
@@ -66,8 +77,22 @@ wheels = [
 
 [[package]]
 name = "av"
+version = "16.0.1"
+source = { registry = "https://www.piwheels.org/simple/" }
+resolution-markers = [
+    "platform_machine == 'armv6l'",
+]
+wheels = [
+    { url = "https://www.piwheels.org/simple/av/av-16.0.1-cp313-cp313-linux_armv6l.whl", hash = "sha256:35c74f4d1b6b07c938b5e74448a8354373b1a7580f57a8789dc1c06979c8730a" },
+]
+
+[[package]]
+name = "av"
 version = "16.1.0"
 source = { registry = "https://pypi.org/simple" }
+resolution-markers = [
+    "platform_machine != 'armv6l'",
+]
 sdist = { url = "https://files.pythonhosted.org/packages/78/cd/3a83ffbc3cc25b39721d174487fb0d51a76582f4a1703f98e46170ce83d4/av-16.1.0.tar.gz", hash = "sha256:a094b4fd87a3721dacf02794d3d2c82b8d712c85b9534437e82a8a978c175ffd", size = 4285203, upload-time = "2026-01-11T07:31:33.772Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/9c/84/2535f55edcd426cebec02eb37b811b1b0c163f26b8d3f53b059e2ec32665/av-16.1.0-cp312-cp312-macosx_11_0_x86_64.whl", hash = "sha256:640f57b93f927fba8689f6966c956737ee95388a91bd0b8c8b5e0481f73513d6", size = 26945785, upload-time = "2026-01-09T20:18:34.486Z" },
@@ -113,11 +138,13 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "aiortc" },
-    { name = "av" },
+    { name = "av", version = "16.0.1", source = { registry = "https://www.piwheels.org/simple/" }, marker = "platform_machine == 'armv6l'" },
+    { name = "av", version = "16.1.0", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine != 'armv6l'" },
     { name = "fastapi" },
     { name = "jinja2" },
     { name = "numpy" },
-    { name = "opencv-python" },
+    { name = "opencv-python", marker = "platform_machine != 'armv6l'" },
+    { name = "opencv-python-headless", marker = "platform_machine == 'armv6l'" },
     { name = "typer" },
     { name = "uvicorn" },
 ]
@@ -130,12 +157,14 @@ oak = [
 [package.metadata]
 requires-dist = [
     { name = "aiortc", specifier = ">=1.14.0" },
-    { name = "av", specifier = ">=16.1.0" },
+    { name = "av", marker = "platform_machine != 'armv6l'", specifier = ">=16.1.0", index = "https://pypi.org/simple" },
+    { name = "av", marker = "platform_machine == 'armv6l'", specifier = ">=16.0.0,<16.1", index = "https://www.piwheels.org/simple/" },
     { name = "depthai", marker = "extra == 'oak'", specifier = ">=3.5.0" },
     { name = "fastapi", specifier = ">=0.136.1" },
     { name = "jinja2", specifier = ">=3.1.6" },
     { name = "numpy", specifier = ">=2.4.4" },
-    { name = "opencv-python", specifier = ">=4.13.0.92" },
+    { name = "opencv-python", marker = "platform_machine != 'armv6l'", specifier = ">=4.13.0.92", index = "https://pypi.org/simple" },
+    { name = "opencv-python-headless", marker = "platform_machine == 'armv6l'", specifier = ">=4.12,<4.13", index = "https://www.piwheels.org/simple/" },
     { name = "typer", specifier = ">=0.25.1" },
     { name = "uvicorn", specifier = ">=0.46.0" },
 ]
@@ -524,7 +553,7 @@ name = "opencv-python"
 version = "4.13.0.92"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "numpy" },
+    { name = "numpy", marker = "platform_machine != 'armv6l'" },
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/fc/6f/5a28fef4c4a382be06afe3938c64cc168223016fa520c5abaf37e8862aa5/opencv_python-4.13.0.92-cp37-abi3-macosx_13_0_arm64.whl", hash = "sha256:caf60c071ec391ba51ed00a4a920f996d0b64e3e46068aac1f646b5de0326a19", size = 46247052, upload-time = "2026-02-05T07:01:25.046Z" },
@@ -535,6 +564,17 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/fd/55/b3b49a1b97aabcfbbd6c7326df9cb0b6fa0c0aefa8e89d500939e04aa229/opencv_python-4.13.0.92-cp37-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:620d602b8f7d8b8dab5f4b99c6eb353e78d3fb8b0f53db1bd258bb1aa001c1d5", size = 72927042, upload-time = "2026-02-05T06:59:23.389Z" },
     { url = "https://files.pythonhosted.org/packages/fb/17/de5458312bcb07ddf434d7bfcb24bb52c59635ad58c6e7c751b48949b009/opencv_python-4.13.0.92-cp37-abi3-win32.whl", hash = "sha256:372fe164a3148ac1ca51e5f3ad0541a4a276452273f503441d718fab9c5e5f59", size = 30932638, upload-time = "2026-02-05T07:02:14.98Z" },
     { url = "https://files.pythonhosted.org/packages/e9/a5/1be1516390333ff9be3a9cb648c9f33df79d5096e5884b5df71a588af463/opencv_python-4.13.0.92-cp37-abi3-win_amd64.whl", hash = "sha256:423d934c9fafb91aad38edf26efb46da91ffbc05f3f59c4b0c72e699720706f5", size = 40212062, upload-time = "2026-02-05T07:02:12.724Z" },
+]
+
+[[package]]
+name = "opencv-python-headless"
+version = "4.12.0.88"
+source = { registry = "https://www.piwheels.org/simple/" }
+dependencies = [
+    { name = "numpy", marker = "platform_machine == 'armv6l'" },
+]
+wheels = [
+    { url = "https://www.piwheels.org/simple/opencv-python-headless/opencv_python_headless-4.12.0.88-cp313-cp313-linux_armv6l.whl", hash = "sha256:93dc98689e47e24280ef5224f407aa3bb8178d5bd1aa3173aa9952b59bd45314" },
 ]
 
 [[package]]
